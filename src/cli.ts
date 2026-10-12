@@ -1,7 +1,14 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
-import chalk from 'chalk';
-import { diffSurfaces, loadSpec } from './openapi.js';
+import { loadSpec } from './loaders/load-spec.js';
+import { diffSurfaces } from './core/diff-surfaces.js';
+import {
+  buildDiffReport,
+  exitCodeForChanges,
+  summarizeChanges,
+} from './analysis/summarize-changes.js';
+import { toJsonDiff } from './reporters/json.js';
+import { formatChangeLine, formatDiffHeader } from './reporters/table.js';
 
 const program = new Command();
 program.name('hx-api-diff').description('OpenAPI breaking-change engine').version('1.0.0');
@@ -16,17 +23,22 @@ program
     const oldS = loadSpec(oldP);
     const newS = loadSpec(newP);
     const changes = diffSurfaces(oldS, newS);
+    const summary = summarizeChanges(changes);
     if (opts.json) {
-      console.log(JSON.stringify({ old: oldS.title, new: newS.title, changes }, null, 2));
+      const report = buildDiffReport(
+        oldS.title,
+        oldS.version,
+        newS.title,
+        newS.version,
+        changes,
+      );
+      console.log(toJsonDiff(report, summary));
+      process.exit(exitCodeForChanges(changes));
       return;
     }
-    console.log(chalk.bold(`${oldS.title}@${oldS.version} → ${newS.title}@${newS.version}\n`));
-    for (const c of changes) {
-      const color =
-        c.kind === 'breaking' ? chalk.red : c.kind === 'security' ? chalk.yellow : chalk.green;
-      console.log(color(`[${c.kind}] ${c.method ?? ''} ${c.path ?? ''} — ${c.message}`));
-    }
-    process.exit(changes.some((c) => c.kind === 'breaking') ? 2 : 0);
+    console.log(formatDiffHeader(oldS.title, oldS.version, newS.title, newS.version));
+    for (const c of changes) console.log(formatChangeLine(c));
+    process.exit(exitCodeForChanges(changes));
   });
 
 program.parse();
