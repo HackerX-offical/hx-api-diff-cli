@@ -57,12 +57,22 @@ export function diffSurfaces(oldS: ApiSurface, newS: ApiSurface): ApiChange[] {
 
   for (const [k, o] of oldMap) {
     if (!newMap.has(k)) {
-      changes.push({ kind: 'breaking', message: 'Endpoint removed', path: o.path, method: o.method });
+      changes.push({
+        kind: 'breaking',
+        message: 'Endpoint removed',
+        path: o.path,
+        method: o.method,
+      });
     }
   }
   for (const [k, o] of newMap) {
     if (!oldMap.has(k)) {
-      changes.push({ kind: 'additive', message: 'New endpoint exposed', path: o.path, method: o.method });
+      changes.push({
+        kind: 'additive',
+        message: 'New endpoint exposed',
+        path: o.path,
+        method: o.method,
+      });
     }
   }
 

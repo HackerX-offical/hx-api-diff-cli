@@ -22,7 +22,8 @@ program
     }
     console.log(chalk.bold(`${oldS.title}@${oldS.version} → ${newS.title}@${newS.version}\n`));
     for (const c of changes) {
-      const color = c.kind === 'breaking' ? chalk.red : c.kind === 'security' ? chalk.yellow : chalk.green;
+      const color =
+        c.kind === 'breaking' ? chalk.red : c.kind === 'security' ? chalk.yellow : chalk.green;
       console.log(color(`[${c.kind}] ${c.method ?? ''} ${c.path ?? ''} — ${c.message}`));
     }
     process.exit(changes.some((c) => c.kind === 'breaking') ? 2 : 0);
