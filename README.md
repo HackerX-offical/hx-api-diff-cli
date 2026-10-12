@@ -7,4 +7,9 @@ Tracks **API attack surface drift** between OpenAPI 3 releases: removed routes
 hx-api-diff diff openapi-v1.yaml openapi-v2.yaml
 ```
 
-MIT — HackerX Official
+HackerX License
+
+## License
+
+Licensed under the [HackerX License](./LICENSE). Redistributions must retain copyright,
+license text, and [NOTICE](./NOTICE) attribution per the license terms.
