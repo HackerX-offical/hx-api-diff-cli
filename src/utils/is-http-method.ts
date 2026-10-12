@@ -1,13 +1,4 @@
-const HTTP_METHODS = new Set([
-  'get',
-  'post',
-  'put',
-  'patch',
-  'delete',
-  'options',
-  'head',
-  'trace',
-]);
+const HTTP_METHODS = new Set(['get', 'post', 'put', 'patch', 'delete', 'options', 'head', 'trace']);
 
 export function isHttpMethod(method: string): boolean {
   return HTTP_METHODS.has(method.toLowerCase());

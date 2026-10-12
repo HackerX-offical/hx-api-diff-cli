@@ -1,33 +1,45 @@
-# hx-api-diff-cli architecture
+# hx-api-diff-cli — architecture
 
-OpenAPI 3 breaking-change intelligence for API attack surface drift.
+## Purpose
 
-## Layout
+Loads two OpenAPI 3 specifications (JSON or YAML), extracts a normalized **API surface**
+(operations, methods, security), and emits a structured change list suitable for release
+reviews and offensive prep. Non-goals: runtime API probing, GraphQL, or Swagger 2.
 
-```
-src/
-  cli.ts                    # Commander `diff` command
-  types.ts                  # ApiSurface, ApiChange, DiffReport
-  openapi.ts                # Back-compat re-exports
-  loaders/load-spec.ts      # Read JSON/YAML → ApiSurface
-  core/
-    extract-operations.ts   # paths → OpRef[]
-    diff-surfaces.ts        # Compare two surfaces
-  analysis/summarize-changes.ts
-  reporters/json.ts         # JSON output
-  reporters/table.ts        # Chalk table lines
-  utils/                    # op-key, is-http-method, spec-format
+## High-level flow
 
-tests/
-  diff.test.ts              # Legacy import path smoke test
+```mermaid
+flowchart LR
+  CLI[cli.ts] --> Load[loaders/load-spec]
+  Load --> Diff[core/diff-surfaces]
+  Diff --> Sum[analysis/summarize-changes]
+  Sum --> Rep[reporters table/json]
 ```
 
-## Develop
+## Module map
 
-```bash
-npm install
-npm run build
-npm test
-```
+| Path                                | Responsibility                                    |
+| ----------------------------------- | ------------------------------------------------- |
+| `src/cli.ts`                        | Commander `diff` command, flags, exit codes       |
+| `src/loaders/load-spec.ts`          | Read file, parse JSON/YAML → `ApiSurface`         |
+| `src/core/extract-operations.ts`    | Flatten `paths` into operation refs               |
+| `src/core/diff-surfaces.ts`         | Compare surfaces → `ApiChange[]`                  |
+| `src/analysis/summarize-changes.ts` | Summary counts, report builder, exit policy       |
+| `src/reporters/`                    | Table (chalk) and JSON serializers                |
+| `src/utils/`                        | Operation keys, HTTP method guard, format helpers |
 
-See [SECURITY.md](./SECURITY.md) for authorized use.
+## Extension
+
+1. Add a new change class in `diff-surfaces.ts` (e.g. parameter requiredness).
+2. Extend `summarize-changes.ts` severity / exit mapping if the change is breaking.
+3. Add unit tests with fixture specs under `tests/` — no live network.
+4. Run `npm test` and `npm run format:check`.
+
+## Testing strategy
+
+- **Unit**: loaders, diff logic, reporters, utils (`*.spec.ts` co-located with modules).
+- **Integration**: `tests/diff.test.ts` smoke on sample fixtures.
+
+## Ethics & scope
+
+Authorized engagements only. See [SECURITY.md](./SECURITY.md).

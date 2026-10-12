@@ -6,10 +6,6 @@ export function toJsonDiff(report: DiffReport, summary?: ChangeSummary): string 
   return JSON.stringify(payload, null, 2);
 }
 
-export function toLegacyJson(
-  oldTitle: string,
-  newTitle: string,
-  changes: ApiChange[],
-): string {
+export function toLegacyJson(oldTitle: string, newTitle: string, changes: ApiChange[]): string {
   return JSON.stringify({ old: oldTitle, new: newTitle, changes }, null, 2);
 }

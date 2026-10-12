@@ -25,13 +25,7 @@ program
     const changes = diffSurfaces(oldS, newS);
     const summary = summarizeChanges(changes);
     if (opts.json) {
-      const report = buildDiffReport(
-        oldS.title,
-        oldS.version,
-        newS.title,
-        newS.version,
-        changes,
-      );
+      const report = buildDiffReport(oldS.title, oldS.version, newS.title, newS.version, changes);
       console.log(toJsonDiff(report, summary));
       process.exit(exitCodeForChanges(changes));
       return;
