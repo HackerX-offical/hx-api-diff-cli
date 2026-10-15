@@ -20,7 +20,7 @@ reports operation-level changes with CI-friendly exit codes.
 ## Install
 
 ```bash
-git clone https://github.com/HackerX-offical/hx-api-diff-cli.git
+git clone https://github.com/HackerX-official/hx-api-diff-cli.git
 cd hx-api-diff-cli
 npm install
 npm run build
